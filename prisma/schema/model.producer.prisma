@@ -1,0 +1,12 @@
+model Producer {
+  id String @id @default(cuid())
+
+  name String
+
+  properties Property[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("producers")
+}

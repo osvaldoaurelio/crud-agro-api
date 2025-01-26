@@ -1,9 +1,17 @@
-import { Injectable, OnModuleDestroy, OnModuleInit, Scope } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+  Scope,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable({ scope: Scope.DEFAULT })
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   constructor(readonly config: ConfigService) {
     super({
       datasources: {
@@ -24,7 +32,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   cleanDb() {
     return this.$transaction([
-      this.doctor.deleteMany(),
+      this.planting.deleteMany(),
+      this.property.deleteMany(),
+      this.producer.deleteMany(),
     ]);
   }
 }

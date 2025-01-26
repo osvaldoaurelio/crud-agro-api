@@ -1,0 +1,15 @@
+services:
+  docker_db:
+    image: postgres:latest
+    container_name: docker-pg-db
+    environment:
+      POSTGRES_USER: johndoe
+      POSTGRES_PASSWORD: randompassword
+      POSTGRES_DB: mydb
+    ports:
+      - 5434:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
