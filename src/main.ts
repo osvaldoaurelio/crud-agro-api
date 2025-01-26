@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
+import { SwaggerService } from './common/modules/swagger/swagger.service';
 
 const validationPipe = new ValidationPipe({
   whitelist: true,
@@ -11,7 +12,7 @@ const validationPipe = new ValidationPipe({
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   const config = app.get(ConfigService);
 
   app.enableCors({
@@ -20,6 +21,8 @@ async function bootstrap() {
   });
   app.useGlobalPipes(validationPipe);
   app.setGlobalPrefix(config.get<string>('GLOBAL_PREFIX', '/v1/api'));
+
+  SwaggerService.setup(app);
 
   await app.listen(config.get<number>('PORT', 3333));
 }
