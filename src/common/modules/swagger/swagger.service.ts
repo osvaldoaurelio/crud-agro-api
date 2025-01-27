@@ -4,25 +4,31 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { Doc } from './docs/documents';
+import { Config } from './docs/config';
+import { PropertyProducerDoc } from './docs/producer/property-producer-doc';
+import { PropertyPropertyDoc } from './docs/property/property-property-doc';
+import { PropertyPlantingDoc } from './docs/planting/property-planting-doc';
 
 @Injectable()
 export class SwaggerService {
-  static setup(app: INestApplication) {
+  static setup(app: INestApplication, global_prefix = '') {
+    const path = `${global_prefix}${Config.path}`;
+
     const config = new DocumentBuilder()
-      .setTitle(Doc.config.title)
-      .setDescription(Doc.config.description)
-      .setVersion(Doc.config.version)
-      .addTag(Doc.tags.suppliers.name, Doc.tags.suppliers.description)
-      .addBearerAuth()
+      .setTitle(Config.title)
+      .setDescription(Config.description)
+      .setVersion(Config.version)
+      .addTag(PropertyProducerDoc.tagName, PropertyProducerDoc.tagDescription)
+      .addTag(PropertyPropertyDoc.tagName, PropertyPropertyDoc.tagDescription)
+      .addTag(PropertyPlantingDoc.tagName, PropertyPlantingDoc.tagDescription)
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
 
     const options: SwaggerCustomOptions = {
-      customSiteTitle: Doc.config.customSiteTitle,
+      customSiteTitle: Config.customSiteTitle,
     };
 
-    SwaggerModule.setup(Doc.config.path, app, document, options);
+    SwaggerModule.setup(path, app, document, options);
   }
 }

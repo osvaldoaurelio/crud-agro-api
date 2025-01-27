@@ -8,21 +8,24 @@ import { SwaggerService } from './common/modules/swagger/swagger.service';
 const validationPipe = new ValidationPipe({
   whitelist: true,
   transform: true,
+  stopAtFirstError: true,
 });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = app.get(ConfigService);
-
-  app.enableCors({
+  const global_prefix = config.get<string>('GLOBAL_PREFIX', 'v1/api');
+  const corOptions = {
     origin: config.get<string>('CORS_ORIGIN', '*'),
-    methods: config.get<string>('CORS_METHODS', 'GET,PUT,POST,DELETE'),
-  });
-  app.useGlobalPipes(validationPipe);
-  app.setGlobalPrefix(config.get<string>('GLOBAL_PREFIX', '/v1/api'));
+    methods: config.get<string>('CORS_METHODS', 'GET,PATCH,POST,DELETE'),
+  };
 
-  SwaggerService.setup(app);
+  app.enableCors(corOptions);
+  app.useGlobalPipes(validationPipe);
+  app.setGlobalPrefix(global_prefix);
+
+  SwaggerService.setup(app, global_prefix);
 
   await app.listen(config.get<number>('PORT', 3333));
 }
