@@ -1,7 +1,7 @@
 model Property {
   id String @id @default(cuid())
 
-  name           String
+  propertyName   String
   city           String
   state          State
   totalArea      Float
@@ -9,9 +9,9 @@ model Property {
   vegetationArea Float
 
   producerId String
-  producer   Producer  @relation(fields: [producerId], references: [id])
+  producer   Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
 
-  plantings   Planting[]
+  plantings Planting[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

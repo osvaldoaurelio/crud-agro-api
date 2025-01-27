@@ -1,7 +1,8 @@
 model Producer {
   id String @id @default(cuid())
 
-  name String
+  fullName  String
+  cpfOrCnpj String @unique
 
   properties Property[]
 
