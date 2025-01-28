@@ -1,14 +1,10 @@
 import { ApiPropertyOptions } from '@nestjs/swagger';
+import { PropertyBase } from '../../property-base';
 
-export class PropertyProducerDoc {
+export class PropertyProducerDoc extends PropertyBase {
   static tagName = 'Producer';
 
   static tagDescription = 'Producer routes';
-
-  static id: ApiPropertyOptions = {
-    example: 'cm6e78t5f0002356wdgnsd869',
-    description: 'The unique identifier of the Producer.',
-  };
 
   static fullName: ApiPropertyOptions = {
     example: 'John Doe',
@@ -32,15 +28,5 @@ export class PropertyProducerDoc {
       },
     ],
     description: 'The properties owned by the Producer.',
-  };
-
-  static createdAt: ApiPropertyOptions = {
-    example: '2023-05-25T12:34:56.789Z',
-    description: 'The date and time when the Producer was created.',
-  };
-
-  static updatedAt: ApiPropertyOptions = {
-    example: '2023-05-25T12:34:56.789Z',
-    description: 'The date and time when the Producer was last updated.',
   };
 }

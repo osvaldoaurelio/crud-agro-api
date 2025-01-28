@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
-import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/producer/property-producer-doc';
+import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/property-producer-doc';
 import { trimString } from 'src/common/utils/strings';
 
 export class UpdateProducerDto {

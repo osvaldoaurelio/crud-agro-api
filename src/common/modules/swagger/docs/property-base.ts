@@ -1,10 +1,6 @@
 import { ApiPropertyOptions } from '@nestjs/swagger';
 
-export class PropertyPlantingDoc {
-  static tagName = 'Planting';
-
-  static tagDescription = 'Planting routes';
-
+export class PropertyBase {
   static id: ApiPropertyOptions = {
     example: 'cm6e78t5f0002356wdgnsd869',
     description: 'The unique identifier of the Property.',

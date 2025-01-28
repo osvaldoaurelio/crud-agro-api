@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { IsCpfOrCnpj } from 'src/common/decorators/validators/is-cpf-or-cnpj.decorator';
-import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/producer/property-producer-doc';
+import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/property-producer-doc';
 import { removeNonNumeric, trimString } from 'src/common/utils/strings';
 import { CreatePropertyDto } from 'src/domain/property/dto/create-property-dto';
 

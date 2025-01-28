@@ -10,7 +10,7 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { PropertyPropertyDoc } from 'src/common/modules/swagger/docs/property/property-property-doc';
+import { PropertyPropertyDoc } from 'src/common/modules/swagger/docs/domain/property/property-property-doc';
 import { trimString } from 'src/common/utils/strings';
 import { IsTotalAreaValid } from '../decorators/validators/is-total-area-valid.decorator';
 

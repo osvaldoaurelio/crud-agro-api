@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Producer } from '@prisma/client';
 import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsArray, IsString } from 'class-validator';
-import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/producer/property-producer-doc';
+import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/property-producer-doc';
 import { formatCpfOrCnpj } from 'src/common/utils/formatters';
 import { ResponsePropertyDto } from 'src/domain/property/dto/response-property.dto';
 

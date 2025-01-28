@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PaginatedResponseDto {
+export class PaginatedBase {
   @ApiProperty({ description: 'Current page number.', example: 1 })
   currentPage: number;
 

@@ -1,15 +1,11 @@
 import { ApiPropertyOptions } from '@nestjs/swagger';
 import { State } from '@prisma/client';
+import { PropertyBase } from '../../property-base';
 
-export class PropertyPropertyDoc {
+export class PropertyPropertyDoc extends PropertyBase {
   static tagName = 'Property';
 
   static tagDescription = 'Property routes';
-
-  static id: ApiPropertyOptions = {
-    example: 'cm6e78t5f0002356wdgnsd869',
-    description: 'The unique identifier of the Property.',
-  };
 
   static propertyName: ApiPropertyOptions = {
     example: 'Fazenda fazendeira',
@@ -39,15 +35,5 @@ export class PropertyPropertyDoc {
   static vegetationArea: ApiPropertyOptions = {
     example: 400,
     description: 'The vegetation area of the Property.',
-  };
-
-  static createdAt: ApiPropertyOptions = {
-    example: '2023-05-25T12:34:56.789Z',
-    description: 'The date and time when the Property was created.',
-  };
-
-  static updatedAt: ApiPropertyOptions = {
-    example: '2023-05-25T12:34:56.789Z',
-    description: 'The date and time when the Property was last updated.',
   };
 }

@@ -17,6 +17,10 @@ export class OperationProducerDoc {
     summary: 'Update a producer by ID',
   };
 
+  static addPropertyToProducer: ApiOperationOptions = {
+    summary: 'Add properties to a producer',
+  };
+
   static remove: ApiOperationOptions = {
     summary: 'Delete a producer by ID',
   };

@@ -27,14 +27,14 @@ import {
 } from '@nestjs/swagger';
 import { PrismaClientKnownRequestError } from 'src/common/modules/prisma/filters/prisma-exception.filter';
 import { Exceptions } from 'src/common/modules/swagger/docs/exceptions';
-import { OperationProducerDoc } from 'src/common/modules/swagger/docs/producer/operation-producer-doc';
-import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/producer/property-producer-doc';
-import { ResponseProducerDoc } from 'src/common/modules/swagger/docs/producer/response-producer-doc';
+import { OperationProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/operation-producer-doc';
+import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/property-producer-doc';
+import { ResponseProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/response-producer-doc';
 import { ParseCuidPipe } from 'src/common/pipes/parse-cuid.pipe';
 import { CreateProducerDto } from '../producer/dto/create-producer.dto';
 import { UpdateProducerDto } from '../producer/dto/update-producer.dto';
 import { ProducerService } from './producer.service';
-import { QueryProducerDoc } from 'src/common/modules/swagger/docs/producer/query-producer-doc';
+import { QueryProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/query-producer-doc';
 import { CreatePropertyDto } from '../property/dto/create-property-dto';
 
 @ApiTags(PropertyProducerDoc.tagName)
@@ -89,6 +89,11 @@ export class ProducerController {
     return this.producerService.update(id, updateProducerDto);
   }
 
+  @ApiOperation(OperationProducerDoc.addPropertyToProducer)
+  @ApiOkResponse(ResponseProducerDoc.addPropertyToProducer)
+  @ApiBadRequestResponse(Exceptions.badRequest)
+  @ApiNotFoundResponse(Exceptions.notFound)
+  @ApiInternalServerErrorResponse(Exceptions.internalServerError)
   @Patch(':id/properties')
   addPropertyToProducer(
     @Param('id', ParseCuidPipe) id: string,
@@ -99,7 +104,6 @@ export class ProducerController {
 
   @ApiOperation(OperationProducerDoc.remove)
   @ApiNoContentResponse(ResponseProducerDoc.remove)
-  @ApiBadRequestResponse(Exceptions.badRequest)
   @ApiNotFoundResponse(Exceptions.notFound)
   @ApiInternalServerErrorResponse(Exceptions.internalServerError)
   @Delete(':id')

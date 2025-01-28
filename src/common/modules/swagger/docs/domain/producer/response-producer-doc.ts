@@ -1,8 +1,8 @@
 import { ApiProperty, ApiResponseOptions } from '@nestjs/swagger';
 import { ResponseProducerDto } from 'src/domain/producer/dto/response-producer.dto';
-import { PaginatedResponseDto } from '../paginated-response-dto';
+import { PaginatedBase } from '../../paginated-base';
 
-class PaginatedResponseProducerDto extends PaginatedResponseDto {
+class PaginatedResponseProducerDto extends PaginatedBase {
   @ApiProperty({
     description: 'An array of producers.',
     isArray: true,
@@ -29,6 +29,11 @@ export class ResponseProducerDoc {
 
   static update: ApiResponseOptions = {
     description: 'The producer has been successfully updated.',
+    type: ResponseProducerDto,
+  };
+
+  static addPropertyToProducer: ApiResponseOptions = {
+    description: 'Returns the producer with property added.',
     type: ResponseProducerDto,
   };
 

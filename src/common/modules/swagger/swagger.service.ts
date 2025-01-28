@@ -5,9 +5,9 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { Config } from './docs/config';
-import { PropertyProducerDoc } from './docs/producer/property-producer-doc';
-import { PropertyPropertyDoc } from './docs/property/property-property-doc';
-import { PropertyPlantingDoc } from './docs/planting/property-planting-doc';
+import { PropertyProducerDoc } from './docs/domain/producer/property-producer-doc';
+import { PropertyPropertyDoc } from './docs/domain/property/property-property-doc';
+import { PropertyPlantingDoc } from './docs/domain/planting/property-planting-doc';
 
 @Injectable()
 export class SwaggerService {
