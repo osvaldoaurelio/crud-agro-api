@@ -1,26 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePlantingDto } from './dto/create-planting.dto';
-import { UpdatePlantingDto } from './dto/update-planting.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { PrismaService } from 'src/common/modules/prisma/prisma.service';
+import { ResponsePlantingDto } from './dto/response-planting.dto';
 
 @Injectable()
 export class PlantingService {
-  create(createPlantingDto: CreatePlantingDto) {
-    return 'This action adds a new planting';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  private async findPlantingOrThrow(id: string) {
+    const planting = await this.prismaService.planting.findUnique({
+      where: { id },
+    });
+
+    if (!planting) {
+      throw new NotFoundException(`Planting with ID ${id} not found.`);
+    }
+
+    return planting;
   }
 
-  findAll() {
-    return `This action returns all planting`;
+  async findOne(id: string) {
+    const planting = await this.findPlantingOrThrow(id);
+
+    return plainToInstance(ResponsePlantingDto, planting);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} planting`;
-  }
+  async remove(id: string) {
+    await this.findPlantingOrThrow(id);
 
-  update(id: number, updatePlantingDto: UpdatePlantingDto) {
-    return `This action updates a #${id} planting`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} planting`;
+    await this.prismaService.planting.delete({
+      where: { id },
+    });
   }
 }

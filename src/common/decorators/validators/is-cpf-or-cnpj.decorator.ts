@@ -13,8 +13,8 @@ class IsCpfOrCnpjConstraint implements ValidatorConstraintInterface {
     return cpf.isValid(value) || cnpj.isValid(value);
   }
 
-  defaultMessage(args: ValidationArguments): string {
-    return `${args.property} must be a valid CPF or CNPJ.`;
+  defaultMessage({ property }: ValidationArguments): string {
+    return `${property} must be a valid CPF or CNPJ.`;
   }
 }
 

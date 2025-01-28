@@ -9,15 +9,15 @@ import { CreatePropertyDto } from '../../dto/create-property-dto';
 
 @ValidatorConstraint({ async: false })
 class IsTotalAreaValidConstraint implements ValidatorConstraintInterface {
-  validate(value: number, args: ValidationArguments) {
-    const { arableArea, vegetationArea } = args.object as CreatePropertyDto;
+  validate(value: number, { object }: ValidationArguments) {
+    const { arableArea, vegetationArea } = object as CreatePropertyDto;
     const totalArea = arableArea + vegetationArea;
 
     return value >= totalArea;
   }
 
-  defaultMessage(args: ValidationArguments) {
-    return `${args.property} area must be greater than or equal to the sum of arable area and vegetation area.`;
+  defaultMessage({ property }: ValidationArguments) {
+    return `${property} area must be greater than or equal to the sum of arable area and vegetation area.`;
   }
 }
 

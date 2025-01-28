@@ -8,14 +8,14 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { PropertyPropertyDoc } from 'src/common/modules/swagger/docs/domain/property/property-property-doc';
-import { PropertyService } from './property.service';
-import { ParseCuidPipe } from 'src/common/pipes/parse-cuid.pipe';
-import { UpdatePropertyDto } from './dto/update-property-dto';
-import { CreatePlantingDto } from '../planting/dto/create-planting.dto';
 import { OperationPropertyDoc } from 'src/common/modules/swagger/docs/domain/property/operation-property-doc';
+import { PropertyPropertyDoc } from 'src/common/modules/swagger/docs/domain/property/property-property-doc';
 import { ResponsePropertyDoc } from 'src/common/modules/swagger/docs/domain/property/response-property-doc';
 import { Exceptions } from 'src/common/modules/swagger/docs/exceptions';
+import { ParseCuidPipe } from 'src/common/pipes/parse-cuid.pipe';
+import { CreatePlantingDto } from '../planting/dto/create-planting.dto';
+import { UpdatePropertyDto } from './dto/update-property-dto';
+import { PropertyService } from './property.service';
 
 @ApiTags(PropertyPropertyDoc.tagName)
 @Controller('propertys')
@@ -29,6 +29,14 @@ export class PropertyController {
   @Get(':id')
   findOne(@Param('id', ParseCuidPipe) id: string) {
     return this.propertyService.findOne(id);
+  }
+
+  @ApiOperation(OperationPropertyDoc.getSumary)
+  @ApiOkResponse(ResponsePropertyDoc.getSumary)
+  @ApiInternalServerErrorResponse(Exceptions.internalServerError)
+  @Get('sumary/info')
+  getSumary() {
+    return this.propertyService.getSumary();
   }
 
   @ApiOperation(OperationPropertyDoc.update)

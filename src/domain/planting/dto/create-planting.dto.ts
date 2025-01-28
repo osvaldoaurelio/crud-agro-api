@@ -1,4 +1,4 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { IsDate, IsString, MaxLength, MinLength } from 'class-validator';
 
 @Exclude()
@@ -11,12 +11,9 @@ export class CreatePlantingDto {
 
   @Expose()
   @IsDate()
+  @Type(() => Date)
   plantingDate: Date;
 
   @Exclude()
-  @Transform(({ obj }) => {
-    const date = new Date(obj.plantingDate);
-    return date.getFullYear();
-  })
   harvest: number;
 }

@@ -10,10 +10,12 @@ import { CreatePropertyDto } from '../property/dto/create-property-dto';
 export class ProducerService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private async findProducerOrThrow(id: string, properties = false) {
+  private includePlantings = { properties: { include: { plantings: true } } };
+
+  private async findProducerOrThrow(id: string, include = {}) {
     const producer = await this.prismaService.producer.findUnique({
       where: { id },
-      include: { properties },
+      include,
     });
 
     if (!producer) {
@@ -25,18 +27,23 @@ export class ProducerService {
 
   async create(createProducerDto: CreateProducerDto) {
     const { properties, ...producerData } = createProducerDto;
+
     const producerCreated = await this.prismaService.producer.create({
       data: {
         ...producerData,
         properties: {
-          create: properties?.map((producer) => ({
-            ...producer,
+          create: properties?.map((property) => ({
+            ...property,
+            plantings: {
+              create: property.plantings?.map((planting) => ({
+                ...planting,
+                harvest: new Date(planting.plantingDate).getFullYear(),
+              })),
+            },
           })),
         },
       },
-      include: {
-        properties: true,
-      },
+      include: this.includePlantings,
     });
 
     return plainToInstance(ResponseProducerDto, producerCreated);
@@ -46,7 +53,7 @@ export class ProducerService {
     const args = {
       skip: (page - 1) * limit,
       take: limit,
-      include: { properties: true },
+      include: this.includePlantings,
     };
 
     const [producers, totalItems] = await Promise.all([
@@ -66,7 +73,7 @@ export class ProducerService {
   }
 
   async findOne(id: string) {
-    const producer = await this.findProducerOrThrow(id, true);
+    const producer = await this.findProducerOrThrow(id, this.includePlantings);
 
     return plainToInstance(ResponseProducerDto, producer);
   }
@@ -89,10 +96,16 @@ export class ProducerService {
       data: properties.map((property) => ({
         ...property,
         producerId: id,
+        plantings: {
+          create: property.plantings?.map((planting) => ({
+            ...planting,
+            harvest: new Date(planting.plantingDate).getFullYear(),
+          })),
+        },
       })),
     });
 
-    const producer = await this.findProducerOrThrow(id, true);
+    const producer = await this.findProducerOrThrow(id, this.includePlantings);
 
     return plainToInstance(ResponseProducerDto, producer);
   }

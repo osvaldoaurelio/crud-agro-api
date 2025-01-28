@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Producer } from '@prisma/client';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, plainToInstance, Transform } from 'class-transformer';
 import { IsArray, IsString } from 'class-validator';
 import { PropertyProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/property-producer-doc';
 import { formatCpfOrCnpj } from 'src/common/utils/formatters';
@@ -26,7 +26,8 @@ export class ResponseProducerDto implements Producer {
 
   @Expose()
   @IsArray()
-  @ApiProperty(PropertyProducerDoc.properties)
+  @Transform(({ value }) => plainToInstance(ResponsePropertyDto, value))
+  @ApiProperty(PropertyProducerDoc.responseProperties)
   properties: ResponsePropertyDto[];
 
   @Expose()

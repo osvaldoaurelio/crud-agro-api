@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Property } from '@prisma/client';
-import { Exclude, Expose } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { Exclude, Expose, plainToInstance, Transform } from 'class-transformer';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 import { PropertyPropertyDoc } from 'src/common/modules/swagger/docs/domain/property/property-property-doc';
+import { ResponsePlantingDto } from 'src/domain/planting/dto/response-planting.dto';
 
 @Exclude()
 export class ResponsePropertyDto implements Property {
@@ -43,6 +44,12 @@ export class ResponsePropertyDto implements Property {
 
   @Exclude()
   producerId: string;
+
+  @Expose()
+  @IsArray()
+  @Transform(({ value }) => plainToInstance(ResponsePlantingDto, value))
+  @ApiProperty(PropertyPropertyDoc.responsePlantings)
+  plantings: ResponsePlantingDto[];
 
   @Expose()
   @IsString()

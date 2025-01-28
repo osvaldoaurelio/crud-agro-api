@@ -5,6 +5,10 @@ export class OperationPropertyDoc {
     summary: 'Get a property by ID',
   };
 
+  static getSumary: ApiOperationOptions = {
+    summary: 'Get a sumary of properties for dashboards',
+  };
+
   static update: ApiOperationOptions = {
     summary: 'Update a property by ID',
   };

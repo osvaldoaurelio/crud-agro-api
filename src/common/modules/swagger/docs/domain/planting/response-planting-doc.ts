@@ -7,11 +7,6 @@ export class ResponsePlantingDoc {
     type: ResponsePlantingDto,
   };
 
-  static update: ApiResponseOptions = {
-    description: 'The planting has been successfully updated.',
-    type: ResponsePlantingDto,
-  };
-
   static remove: ApiResponseOptions = {
     description: 'The planting has been successfully deleted.',
   };

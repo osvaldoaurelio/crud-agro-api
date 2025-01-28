@@ -31,6 +31,6 @@ export class CreateProducerDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreatePropertyDto)
-  @ApiProperty(PropertyProducerDoc.properties)
+  @ApiProperty(PropertyProducerDoc.createProperties)
   properties?: CreatePropertyDto[];
 }

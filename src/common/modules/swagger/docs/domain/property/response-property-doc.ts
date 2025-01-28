@@ -1,10 +1,16 @@
 import { ApiResponseOptions } from '@nestjs/swagger';
 import { ResponsePropertyDto } from 'src/domain/property/dto/response-property.dto';
+import { ResponsePropertySumaryDto } from 'src/domain/property/dto/response-property-sumary.dto';
 
 export class ResponsePropertyDoc {
   static findOne: ApiResponseOptions = {
     description: 'Returns the property with the specified ID.',
     type: ResponsePropertyDto,
+  };
+
+  static getSumary: ApiResponseOptions = {
+    description: 'Returns the sumary of all properties for dashboards.',
+    type: ResponsePropertySumaryDto,
   };
 
   static update: ApiResponseOptions = {

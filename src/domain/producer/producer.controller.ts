@@ -7,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -36,6 +35,8 @@ import { UpdateProducerDto } from '../producer/dto/update-producer.dto';
 import { ProducerService } from './producer.service';
 import { QueryProducerDoc } from 'src/common/modules/swagger/docs/domain/producer/query-producer-doc';
 import { CreatePropertyDto } from '../property/dto/create-property-dto';
+import { ParseIntPagePipe } from 'src/common/pipes/parse-int-page.pipe';
+import { ParseIntLimitPipe } from 'src/common/pipes/parse-int-limit.pipe';
 
 @ApiTags(PropertyProducerDoc.tagName)
 @Controller('producers')
@@ -50,7 +51,6 @@ export class ProducerController {
   @UseFilters(PrismaClientKnownRequestError)
   @Post()
   create(@Body() createProducerDto: CreateProducerDto) {
-    console.log({ createProducerDto });
     return this.producerService.create(createProducerDto);
   }
 
@@ -61,8 +61,8 @@ export class ProducerController {
   @ApiQuery(QueryProducerDoc.limit)
   @Get()
   findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPagePipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntLimitPipe) limit: number,
   ) {
     return this.producerService.findAll(page, limit);
   }
