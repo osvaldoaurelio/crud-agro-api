@@ -1,25 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient, State } from '@prisma/client';
 import { cpf } from 'cpf-cnpj-validator';
+import { createInterface } from 'node:readline/promises';
 import { crops, location } from './constants.seed';
+import { getRandomEl, getRandomNumber } from './utils.seed';
 
 const prisma = new PrismaClient();
-
-function getRandomEl<T>(arr: T[]) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function getRandomNumber({
-  min = 1,
-  max = 3,
-}: {
-  min?: number;
-  max?: number;
-} = {}) {
-  if (min > max) return 1;
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 function generatePlanting() {
   const plantingDate = faker.date.past();
@@ -30,13 +16,13 @@ function generatePlanting() {
     harvest: new Date(plantingDate).getFullYear(),
   };
 
-  console.log('Planting: ', planting);
+  console.log(`    Planting: ${planting.cropName}`);
 
   return planting;
 }
 
 function generatePlantings(length = 1) {
-  return Array.from({ length }).map(() => generatePlanting());
+  return Array.from({ length }).map(generatePlanting);
 }
 
 function generateProperty() {
@@ -55,13 +41,13 @@ function generateProperty() {
     plantings: { create: generatePlantings(getRandomNumber()) },
   };
 
-  console.log('Property: ', property);
+  console.log(`  Property: ${property.propertyName}`);
 
   return property;
 }
 
 function generateProperties(length = 1) {
-  return Array.from({ length }).map(() => generateProperty());
+  return Array.from({ length }).map(generateProperty);
 }
 
 function generateProducer() {
@@ -71,21 +57,50 @@ function generateProducer() {
     properties: { create: generateProperties(getRandomNumber()) },
   };
 
-  console.log('Producer: ', producer);
+  console.log(`Producer: ${producer.fullName}\n`);
 
   return producer;
 }
 
 function generateProducers(length = 1) {
-  return Array.from({ length }).map(() => generateProducer());
+  return Array.from({ length }).map(generateProducer);
+}
+
+function clearDatabase() {
+  return prisma.producer.deleteMany();
 }
 
 async function main() {
-  // await prisma.producer.deleteMany();
-  const producers = generateProducers(getRandomNumber({ max: 50 }));
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('You cannot run this in production!');
+  }
 
-  await Promise.all(
-    producers.map((producer) => prisma.producer.create({ data: producer })),
+  const count = Number(process.argv[2]) || 20;
+
+  if (Number.isNaN(count) || count < 1 || count > 1000) {
+    throw new Error(
+      'Invalid count: Please provide a number between 1 and 1000',
+    );
+  }
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  const answer = await rl.question(
+    `This seed will create ${count} new producers.\nWould you like to clear the database before seeding? (y/N) `,
+  );
+
+  rl.close();
+
+  if (answer.toLowerCase() === 'y') {
+    console.log('\n# Clearing database...\n');
+    await clearDatabase();
+  }
+
+  return Promise.all(
+    generateProducers(count).map((data) => prisma.producer.create({ data })),
   );
 }
 
@@ -95,5 +110,6 @@ main()
     process.exit(1);
   })
   .finally(() => {
+    console.log('# Seeding completed!');
     prisma.$disconnect();
   });
