@@ -16,7 +16,7 @@ function generatePlanting() {
     harvest: new Date(plantingDate).getFullYear(),
   };
 
-  console.log(`    Planting: ${planting.cropName}`);
+  console.log(`\t\tPlanting: ${planting.cropName}`);
 
   return planting;
 }
@@ -41,7 +41,7 @@ function generateProperty() {
     plantings: { create: generatePlantings(getRandomNumber()) },
   };
 
-  console.log(`  Property: ${property.propertyName}`);
+  console.log(`\tProperty: ${property.propertyName}`);
 
   return property;
 }
@@ -89,7 +89,9 @@ async function main() {
   });
 
   const answer = await rl.question(
-    `This seed will create ${count} new producers.\nWould you like to clear the database before seeding? (y/N) `,
+    `\t********* This seed will create ${count} new producers. *********
+
+        Would you like to clear the database before seeding? (y/N) `,
   );
 
   rl.close();
@@ -112,4 +114,5 @@ main()
   .finally(() => {
     console.log('# Seeding completed!');
     prisma.$disconnect();
+    console.log('# Seeding completed!');
   });
