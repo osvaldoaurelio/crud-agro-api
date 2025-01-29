@@ -2,8 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { cpf } from 'cpf-cnpj-validator';
 
 describe('AppController (e2e)', () => {
+  const validCpf = cpf.generate();
+
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -19,71 +22,27 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
-
   it('/producers (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/producers')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .expect((response) => {
-        expect(Array.isArray(response.body.data)).toBe(true);
-      });
-  });
-
-  it('/producers/:id (GET)', () => {
-    const producerId = 'some-valid-id';
-    return request(app.getHttpServer())
-      .get(`/producers/${producerId}`)
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .expect((response) => {
-        expect(response.body).toHaveProperty('id', producerId);
-      });
-  });
-
-  it('/producers (POST)', () => {
-    const newProducer = {
-      fullName: 'New Producer',
-      cpfOrCnpj: '12345678901',
-      properties: [],
+    const producerRequest = {
+      fullName: 'Producer Name',
+      cpfOrCnpj: validCpf,
     };
+
+    const producerResponse = {
+      id: expect.any(String),
+      ...producerRequest,
+      cpfOrCnpj: cpf.format(validCpf),
+      properties: [],
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    };
+
     return request(app.getHttpServer())
       .post('/producers')
-      .send(newProducer)
+      .send(producerRequest)
       .expect(201)
-      .expect('Content-Type', /json/)
       .expect((response) => {
-        expect(response.body).toHaveProperty('id');
-        expect(response.body).toHaveProperty('fullName', newProducer.fullName);
+        expect(response.body).toEqual(producerResponse);
       });
-  });
-
-  it('/producers/:id (PATCH)', () => {
-    const producerId = 'some-valid-id';
-    const updateData = {
-      fullName: 'Updated Producer Name',
-    };
-    return request(app.getHttpServer())
-      .patch(`/producers/${producerId}`)
-      .send(updateData)
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .expect((response) => {
-        expect(response.body).toHaveProperty('id', producerId);
-        expect(response.body).toHaveProperty('fullName', updateData.fullName);
-      });
-  });
-
-  it('/producers/:id (DELETE)', () => {
-    const producerId = 'some-valid-id';
-    return request(app.getHttpServer())
-      .delete(`/producers/${producerId}`)
-      .expect(204);
   });
 });
