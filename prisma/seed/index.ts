@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient, State } from '@prisma/client';
 import { cpf } from 'cpf-cnpj-validator';
-import { location } from './location.seed';
+import { crops, location } from './constants.seed';
 
 const prisma = new PrismaClient();
 
@@ -22,16 +22,17 @@ function getRandomNumber({
 }
 
 function generatePlanting() {
-  const crops = ['Wheat', 'Corn', 'Soy', 'Rice', 'Beans', 'Cotton'];
   const plantingDate = faker.date.past();
 
-  console.log({ plantingDate, year: new Date(plantingDate).getFullYear() });
-
-  return {
-    plantingDate: faker.date.past(),
+  const planting = {
+    plantingDate,
     cropName: getRandomEl(crops),
     harvest: new Date(plantingDate).getFullYear(),
   };
+
+  console.log('Planting: ', planting);
+
+  return planting;
 }
 
 function generatePlantings(length = 1) {
@@ -44,7 +45,7 @@ function generateProperty() {
 
   const [[state, cities]] = Object.entries<string[]>(getRandomEl(location));
 
-  return {
+  const property = {
     propertyName: `${faker.person.firstName()}'s Farm`,
     state: state as State,
     city: getRandomEl(cities),
@@ -53,6 +54,10 @@ function generateProperty() {
     totalArea: arableArea + vegetationArea,
     plantings: { create: generatePlantings(getRandomNumber()) },
   };
+
+  console.log('Property: ', property);
+
+  return property;
 }
 
 function generateProperties(length = 1) {
@@ -60,11 +65,15 @@ function generateProperties(length = 1) {
 }
 
 function generateProducer() {
-  return {
+  const producer = {
     fullName: faker.person.fullName(),
     cpfOrCnpj: cpf.generate(),
     properties: { create: generateProperties(getRandomNumber()) },
   };
+
+  console.log('Producer: ', producer);
+
+  return producer;
 }
 
 function generateProducers(length = 1) {
@@ -72,7 +81,8 @@ function generateProducers(length = 1) {
 }
 
 async function main() {
-  const producers = generateProducers(10);
+  // await prisma.producer.deleteMany();
+  const producers = generateProducers(getRandomNumber({ max: 50 }));
 
   await Promise.all(
     producers.map((producer) => prisma.producer.create({ data: producer })),
@@ -80,8 +90,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error({ error });
     process.exit(1);
   })
   .finally(() => {

@@ -1,3 +1,5 @@
+export const crops = ['Wheat', 'Corn', 'Soy', 'Rice', 'Beans', 'Cotton'];
+
 export const location: Record<string, string[]>[] = [
   {
     SP: [
