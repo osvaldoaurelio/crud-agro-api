@@ -5,12 +5,7 @@
   "author": "Osvaldo Aurélio",
   "private": false,
   "license": "UNLICENSED",
-  "scripts": {
-    "prisma:dev": "prisma migrate dev --name init",
-    "db:rm": "docker compose rm docker_db -s -f -v",
-    "db:up": "docker compose up docker_db -d",
-    "db:restart": "npm run db:rm && npm run db:up && sleep 1 && npm run prisma:dev",
-    "build": "nest build",
+  "scripts": {"build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -76,6 +71,9 @@
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
