@@ -56,7 +56,7 @@ describe('ProducerService', () => {
 
       mockPrismaService.producer.create.mockResolvedValue(createdProducer);
 
-      expect(await service.create(createProducerDto)).toEqual(
+      expect(await service.create(createProducerDto)).toStrictEqual(
         plainToInstance(ResponseProducerDto, createdProducer),
       );
       expect(mockPrismaService.producer.create).toHaveBeenCalledWith({
@@ -88,7 +88,7 @@ describe('ProducerService', () => {
       mockPrismaService.producer.findMany.mockResolvedValue(producers);
       mockPrismaService.producer.count.mockResolvedValue(totalItems);
 
-      expect(await service.findAll(1, 10)).toEqual({
+      expect(await service.findAll(1, 10)).toStrictEqual({
         currentPage: 1,
         totalItems,
         totalPages: 1,
@@ -111,7 +111,7 @@ describe('ProducerService', () => {
 
       mockPrismaService.producer.findUnique.mockResolvedValue(producer);
 
-      expect(await service.findOne('1')).toEqual(
+      expect(await service.findOne('1')).toStrictEqual(
         plainToInstance(ResponseProducerDto, producer),
       );
     });
@@ -144,7 +144,7 @@ describe('ProducerService', () => {
       mockPrismaService.producer.findUnique.mockResolvedValue(producer);
       mockPrismaService.producer.update.mockResolvedValue(updatedProducer);
 
-      expect(await service.update('1', updateProducerDto)).toEqual(
+      expect(await service.update('1', updateProducerDto)).toStrictEqual(
         plainToInstance(ResponseProducerDto, updatedProducer),
       );
       expect(mockPrismaService.producer.update).toHaveBeenCalledWith({
@@ -186,7 +186,7 @@ describe('ProducerService', () => {
         count: properties.length,
       });
 
-      expect(await service.addPropertyToProducer('1', properties)).toEqual(
+      expect(await service.addPropertyToProducer('1', properties)).toStrictEqual(
         plainToInstance(ResponseProducerDto, producer),
       );
     });

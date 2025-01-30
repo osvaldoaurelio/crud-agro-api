@@ -8,7 +8,13 @@ import { ResponsePropertyDto } from './dto/response-property.dto';
 import { ResponsePropertySumaryDto } from './dto/response-property-sumary.dto';
 
 describe('PropertyService', () => {
-  let service: PropertyService;
+  let propertyService: PropertyService;
+
+  const mockProperty = {
+    id: 'cvk4',
+    propertyName: 'Property Name',
+    // other fields...
+  };
 
   const mockPrismaService = {
     property: {
@@ -33,39 +39,40 @@ describe('PropertyService', () => {
       ],
     }).compile();
 
-    service = testingModule.get<PropertyService>(PropertyService);
+    propertyService = testingModule.get<PropertyService>(PropertyService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('findOne', () => {
-    it('should return a property', async () => {
-      const property = {
-        id: '1',
-        propertyName: 'Property 1',
-        city: 'City 1',
-        state: 'SP',
-        totalArea: 100,
-        arableArea: 50,
-        vegetationArea: 30,
-        plantings: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockPrismaService.property.findUnique.mockResolvedValue(property);
-
-      expect(await service.findOne('1')).toEqual(
-        plainToInstance(ResponsePropertyDto, property),
+    it('should return a property if it exists', async () => {
+      const expectedResponse = plainToInstance(
+        ResponsePropertyDto,
+        mockProperty,
       );
+
+      mockPrismaService.property.findUnique.mockResolvedValue(mockProperty);
+      const response = await propertyService.findOne(mockProperty.id);
+
+      expect(response).toStrictEqual(expectedResponse);
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: { plantings: true },
+      });
     });
 
     it('should throw NotFoundException if property not found', async () => {
       mockPrismaService.property.findUnique.mockResolvedValue(null);
 
-      await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
+      await expect(propertyService.findOne(mockProperty.id)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: { plantings: true },
+      });
     });
   });
 
@@ -80,6 +87,13 @@ describe('PropertyService', () => {
       const propertiesByLandUse = {
         _sum: { arableArea: 500, vegetationArea: 300 },
       };
+      const expectedResponse = plainToInstance(ResponsePropertySumaryDto, {
+        totalCountProperties,
+        totalAreaHectares,
+        propertiesByState,
+        propertiesByCrop,
+        propertiesByLandUse,
+      });
 
       mockPrismaService.property.count.mockResolvedValue(totalCountProperties);
       mockPrismaService.property.aggregate.mockResolvedValueOnce(
@@ -95,103 +109,134 @@ describe('PropertyService', () => {
         propertiesByLandUse,
       );
 
-      expect(await service.getSumary()).toEqual(
-        plainToInstance(ResponsePropertySumaryDto, {
-          totalCountProperties,
-          totalAreaHectares,
-          propertiesByState,
-          propertiesByCrop,
-          propertiesByLandUse,
-        }),
-      );
+      expect(await propertyService.getSumary()).toStrictEqual(expectedResponse);
     });
   });
 
   describe('update', () => {
-    it('should update a property', async () => {
-      const updatePropertyDto: UpdatePropertyDto = {
+    it('should update a property if it exists', async () => {
+      const mockUpdateProperty: UpdatePropertyDto = {
         propertyName: 'Updated Name',
       };
-      const property = {
-        id: '1',
-        propertyName: 'Property 1',
-        city: 'City 1',
-        state: 'SP',
-        totalArea: 100,
-        arableArea: 50,
-        vegetationArea: 30,
-        plantings: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      const updatedProperty = { ...property, ...updatePropertyDto };
-
-      mockPrismaService.property.findUnique.mockResolvedValue(property);
-      mockPrismaService.property.update.mockResolvedValue(updatedProperty);
-
-      expect(await service.update('1', updatePropertyDto)).toEqual(
-        plainToInstance(ResponsePropertyDto, updatedProperty),
-      );
-      expect(mockPrismaService.property.update).toHaveBeenCalledWith({
-        where: { id: '1' },
-        data: updatePropertyDto,
+      const expectedResponse = plainToInstance(ResponsePropertyDto, {
+        ...mockProperty,
+        ...mockUpdateProperty,
       });
+
+      mockPrismaService.property.findUnique.mockResolvedValue(mockProperty);
+      mockPrismaService.property.update.mockResolvedValue({
+        ...mockProperty,
+        ...mockUpdateProperty,
+      });
+      const response = await propertyService.update(
+        mockProperty.id,
+        mockUpdateProperty,
+      );
+
+      expect(response).toStrictEqual(expectedResponse);
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
+      });
+      expect(mockPrismaService.property.update).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        data: mockUpdateProperty,
+      });
+    });
+
+    it('should throw NotFoundException if property not found', async () => {
+      mockPrismaService.property.findUnique.mockResolvedValue(null);
+
+      await expect(
+        propertyService.update(mockProperty.id, {} as UpdatePropertyDto),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
+      });
+      expect(mockPrismaService.property.update).not.toHaveBeenCalled();
     });
   });
 
   describe('addPlantingToProperty', () => {
-    it('should add plantings to a property', async () => {
-      const plantings = [
-        {
-          plantingDate: new Date(),
-          cropName: 'Wheat',
-        },
-      ];
-      const property = {
-        id: '1',
-        propertyName: 'Property 1',
-        city: 'City 1',
-        state: 'SP',
-        totalArea: 100,
-        arableArea: 50,
-        vegetationArea: 30,
-        plantings,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+    const mockPlantings = [
+      { plantingDate: new Date(), cropName: 'Corn' },
+      { plantingDate: new Date(), cropName: 'Soy' },
+    ];
+
+    it('should add plantings to a property if it exists', async () => {
+      const mockPropertyWithPlantings = {
+        ...mockProperty,
+        plantings: mockPlantings,
       };
-
-      mockPrismaService.property.findUnique.mockResolvedValue(property);
-      mockPrismaService.planting.createMany.mockResolvedValue({
-        count: plantings.length,
-      });
-
-      expect(await service.addPlantingToProperty('1', plantings)).toEqual(
-        plainToInstance(ResponsePropertyDto, property),
+      const expectedResponse = plainToInstance(
+        ResponsePropertyDto,
+        mockPropertyWithPlantings,
       );
+
+      mockPrismaService.property.findUnique.mockResolvedValue(
+        mockPropertyWithPlantings,
+      );
+      mockPrismaService.planting.createMany.mockResolvedValue(undefined);
+      const response = await propertyService.addPlantingToProperty(
+        mockProperty.id,
+        mockPlantings,
+      );
+
+      expect(response).toStrictEqual(expectedResponse);
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
+      });
+      expect(mockPrismaService.planting.createMany).toHaveBeenCalledWith({
+        data: mockPlantings.map((planting) => ({
+          ...planting,
+          harvest: new Date(planting.plantingDate).getFullYear(),
+          propertyId: mockProperty.id,
+        })),
+      });
+    });
+
+    it('should throw NotFoundException if property not found', async () => {
+      mockPrismaService.property.findUnique.mockResolvedValue(null);
+
+      await expect(
+        propertyService.addPlantingToProperty(mockProperty.id, []),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
+      });
+      expect(mockPrismaService.planting.createMany).not.toHaveBeenCalled();
     });
   });
 
   describe('remove', () => {
-    it('should remove a property', async () => {
-      const property = {
-        id: '1',
-        propertyName: 'Property 1',
-        city: 'City 1',
-        state: 'SP',
-        totalArea: 100,
-        arableArea: 50,
-        vegetationArea: 30,
-        plantings: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+    it('should delete a property if it exists', async () => {
+      mockPrismaService.property.findUnique.mockResolvedValue(mockProperty);
+      await propertyService.remove(mockProperty.id);
 
-      mockPrismaService.property.findUnique.mockResolvedValue(property);
-
-      await service.remove('1');
-      expect(mockPrismaService.property.delete).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
       });
+      expect(mockPrismaService.property.delete).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+      });
+      expect(propertyService.remove(mockProperty.id)).resolves.toBeUndefined();
+    });
+
+    it('should throw NotFoundException if the property does not exist', async () => {
+      mockPrismaService.property.findUnique.mockResolvedValue(null);
+
+      await expect(propertyService.remove(mockProperty.id)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockPrismaService.property.findUnique).toHaveBeenCalledWith({
+        where: { id: mockProperty.id },
+        include: {},
+      });
+      expect(mockPrismaService.property.delete).not.toHaveBeenCalled();
     });
   });
 });

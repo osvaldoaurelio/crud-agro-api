@@ -9,10 +9,12 @@ import { ResponsePropertySumaryDto } from './dto/response-property-sumary.dto';
 export class PropertyService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private async findPropertyOrThrow(id: string, plantings = false) {
+  private incluePlantings = { plantings: true };
+
+  private async findPropertyOrThrow(id: string, include = {}) {
     const property = await this.prismaService.property.findUnique({
       where: { id },
-      include: { plantings },
+      include,
     });
 
     if (!property) {
@@ -23,7 +25,7 @@ export class PropertyService {
   }
 
   async findOne(id: string) {
-    const property = await this.findPropertyOrThrow(id, true);
+    const property = await this.findPropertyOrThrow(id, this.incluePlantings);
 
     return plainToInstance(ResponsePropertyDto, property);
   }
@@ -84,7 +86,7 @@ export class PropertyService {
       })),
     });
 
-    const property = await this.findPropertyOrThrow(id, true);
+    const property = await this.findPropertyOrThrow(id, this.incluePlantings);
 
     return plainToInstance(ResponsePropertyDto, property);
   }

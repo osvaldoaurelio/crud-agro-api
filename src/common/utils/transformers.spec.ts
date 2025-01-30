@@ -9,7 +9,7 @@ describe('transformArrayToObject', () => {
     ];
     const expectedOutput = { SP: 2, GO: 11, TO: 3 };
 
-    expect(transformArrayToObject(input, 'state')).toEqual(expectedOutput);
+    expect(transformArrayToObject(input, 'state')).toStrictEqual(expectedOutput);
   });
 
   it('should transform an array using "cropName" as the key', () => {
@@ -20,6 +20,6 @@ describe('transformArrayToObject', () => {
     ];
     const expectedOutput = { Soybean: 2, Corn: 11, Wheat: 3 };
 
-    expect(transformArrayToObject(input, 'cropName')).toEqual(expectedOutput);
+    expect(transformArrayToObject(input, 'cropName')).toStrictEqual(expectedOutput);
   });
 });

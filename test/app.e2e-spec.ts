@@ -42,7 +42,7 @@ describe('AppController (e2e)', () => {
       .send(producerRequest)
       .expect(201)
       .expect((response) => {
-        expect(response.body).toEqual(producerResponse);
+        expect(response.body).toStrictEqual(producerResponse);
       });
   });
 });
