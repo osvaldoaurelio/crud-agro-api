@@ -26,14 +26,14 @@ describe('PropertyService', () => {
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const testingModule: TestingModule = await Test.createTestingModule({
       providers: [
         PropertyService,
         { provide: PrismaService, useValue: mockPrismaService },
       ],
     }).compile();
 
-    service = module.get<PropertyService>(PropertyService);
+    service = testingModule.get<PropertyService>(PropertyService);
   });
 
   it('should be defined', () => {

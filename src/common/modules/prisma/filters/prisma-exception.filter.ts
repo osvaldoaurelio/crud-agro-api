@@ -12,8 +12,6 @@ export class PrismaClientKnownRequestError implements ExceptionFilter {
   private readonly PrismaCodeException = 'P2002';
 
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
-    console.error({ exception });
-
     if (exception.code === this.PrismaCodeException) {
       const response = host.switchToHttp().getResponse<Response>();
 

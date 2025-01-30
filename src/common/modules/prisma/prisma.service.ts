@@ -29,12 +29,4 @@ export class PrismaService
   async onModuleDestroy() {
     await this.$disconnect();
   }
-
-  cleanDb() {
-    return this.$transaction([
-      this.planting.deleteMany(),
-      this.property.deleteMany(),
-      this.producer.deleteMany(),
-    ]);
-  }
 }
